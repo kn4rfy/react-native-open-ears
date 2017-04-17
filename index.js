@@ -14,8 +14,8 @@ var { DeviceEventEmitter, NativeModules } = require('react-native');
 const RNOpenEars = NativeModules.OpenEars;
 
 var OpenEars = {
-  speechRecognizer: function(params) {
-    RNOpenEars.speechRecognizer(params);
+  registerVocabulary: function(params) {
+    RNOpenEars.registerVocabulary(params);
   }
 };
 
