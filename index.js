@@ -14,8 +14,17 @@ var { DeviceEventEmitter, NativeModules } = require('react-native');
 const RNOpenEars = NativeModules.OpenEars;
 
 var OpenEars = {
-  registerVocabulary: function(params) {
-    RNOpenEars.registerVocabulary(params);
+  startListening: function(params) {
+    RNOpenEars.startListening(params);
+  },
+  stopListening: function() {
+    RNOpenEars.stopListening();
+  },
+  suspendRecognition: function() {
+    RNOpenEars.suspendRecognition();
+  },
+  resumeRecognition: function() {
+    RNOpenEars.resumeRecognition();
   }
 };
 
