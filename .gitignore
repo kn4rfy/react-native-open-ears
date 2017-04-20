@@ -5,7 +5,6 @@ npm-debug.log
 xcuserdata
 project.xcworkspace
 ios/react-native
-ios/RCTOpenEars/Framework
 
 # Android/IJ
 .idea
