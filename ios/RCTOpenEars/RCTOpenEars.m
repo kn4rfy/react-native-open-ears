@@ -32,6 +32,7 @@ RCT_EXPORT_METHOD(startListening:(NSDictionary *)args)
         dicPath = [lmGenerator pathToSuccessfullyGeneratedDictionaryWithRequestedName:name];
 
         [[OEPocketsphinxController sharedInstance] setActive:TRUE error:nil];
+        [[OEPocketsphinxController sharedInstance] setValue:@3.0f forKey:@"vadThreshold"];
         [[OEPocketsphinxController sharedInstance] startListeningWithLanguageModelAtPath:lmPath dictionaryAtPath:dicPath acousticModelAtPath:[OEAcousticModel pathToModel:@"AcousticModelEnglish"] languageModelIsJSGF:NO]; // Change "AcousticModelEnglish" to "AcousticModelSpanish" to perform Spanish recognition instead of English.
 
     } else {
@@ -57,6 +58,9 @@ RCT_EXPORT_METHOD(resumeRecognition)
 
 - (void) pocketsphinxDidReceiveHypothesis:(NSString *)hypothesis recognitionScore:(NSString *)recognitionScore utteranceID:(NSString *)utteranceID {
     NSLog(@"The received hypothesis is %@ with a score of %@ and an ID of %@", hypothesis, recognitionScore, utteranceID);
+    NSLog(@"%@", hypothesis);
+    NSLog(@"%@", recognitionScore);
+    NSLog(@"%@", utteranceID);
 }
 
 - (void) pocketsphinxDidStartListening {
