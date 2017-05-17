@@ -11,33 +11,40 @@
         self.openEarsEventsObserver = [[OEEventsObserver alloc] init];
         [self.openEarsEventsObserver setDelegate:self];
     }
+    
+    [[OEPocketsphinxController sharedInstance] requestMicPermission];
 
     return self;
 }
 
 RCT_EXPORT_MODULE()
 
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[@"micPermissionDenied"];
+}
+
 RCT_EXPORT_METHOD(startListening:(NSDictionary *)args)
 {
-    NSArray *words = [args objectForKey:@"words"];
-    NSString *name = [args objectForKey:@"name"];
-    NSError *err = [lmGenerator generateLanguageModelFromArray:words withFilesNamed:name forAcousticModelAtPath:[OEAcousticModel pathToModel:@"AcousticModelEnglish"]]; // Change "AcousticModelEnglish" to "AcousticModelSpanish" to create a Spanish language model instead of an English one.
-
-    NSString *lmPath = nil;
-    NSString *dicPath = nil;
-
-    if(err == nil) {
-
-        lmPath = [lmGenerator pathToSuccessfullyGeneratedLanguageModelWithRequestedName:name];
-        dicPath = [lmGenerator pathToSuccessfullyGeneratedDictionaryWithRequestedName:name];
-
-        [[OEPocketsphinxController sharedInstance] setActive:TRUE error:nil];
-        [[OEPocketsphinxController sharedInstance] setValue:@3.0f forKey:@"vadThreshold"];
-        [[OEPocketsphinxController sharedInstance] startListeningWithLanguageModelAtPath:lmPath dictionaryAtPath:dicPath acousticModelAtPath:[OEAcousticModel pathToModel:@"AcousticModelEnglish"] languageModelIsJSGF:NO]; // Change "AcousticModelEnglish" to "AcousticModelSpanish" to perform Spanish recognition instead of English.
-
-    } else {
-        NSLog(@"Error: %@",[err localizedDescription]);
-    }
+        NSArray *words = [args objectForKey:@"words"];
+        NSString *name = [args objectForKey:@"name"];
+        NSError *err = [lmGenerator generateLanguageModelFromArray:words withFilesNamed:name forAcousticModelAtPath:[OEAcousticModel pathToModel:@"AcousticModelEnglish"]]; // Change "AcousticModelEnglish" to "AcousticModelSpanish" to create a Spanish language model instead of an English one.
+        
+        NSString *lmPath = nil;
+        NSString *dicPath = nil;
+        
+        if(err == nil) {
+            
+            lmPath = [lmGenerator pathToSuccessfullyGeneratedLanguageModelWithRequestedName:name];
+            dicPath = [lmGenerator pathToSuccessfullyGeneratedDictionaryWithRequestedName:name];
+            
+            [[OEPocketsphinxController sharedInstance] setActive:TRUE error:nil];
+            [[OEPocketsphinxController sharedInstance] setValue:@3.0f forKey:@"vadThreshold"];
+            [[OEPocketsphinxController sharedInstance] startListeningWithLanguageModelAtPath:lmPath dictionaryAtPath:dicPath acousticModelAtPath:[OEAcousticModel pathToModel:@"AcousticModelEnglish"] languageModelIsJSGF:NO]; // Change "AcousticModelEnglish" to "AcousticModelSpanish" to perform Spanish recognition instead of English.
+            
+        } else {
+            NSLog(@"Error: %@",[err localizedDescription]);
+        }
 }
 
 RCT_EXPORT_METHOD(stopListening)
@@ -54,6 +61,11 @@ RCT_EXPORT_METHOD(suspendRecognition)
 RCT_EXPORT_METHOD(resumeRecognition)
 {
     [[OEPocketsphinxController sharedInstance] resumeRecognition];
+}
+
+RCT_EXPORT_METHOD(gotoSettings)
+{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
 }
 
 - (void) pocketsphinxDidReceiveHypothesis:(NSString *)hypothesis recognitionScore:(NSString *)recognitionScore utteranceID:(NSString *)utteranceID {
@@ -103,5 +115,8 @@ RCT_EXPORT_METHOD(resumeRecognition)
     NSLog(@"A test file that was submitted for recognition is now complete.");
 }
 
+- (void) pocketsphinxFailedNoMicPermissions {
+    [self sendEventWithName:@"micPermissionDenied" body:@"success"];
+}
 
 @end
